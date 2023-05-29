@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>文字が落ちるエフェクト</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+    }
+
+    .falling-text {
+      position: absolute;
+      color: white;
+      font-size: 24px;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    // 文字の配列
+    const characters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+
+    // 最小および最大の落下速度（ピクセル/秒）
+    const minSpeed = 50;
+    const maxSpeed = 200;
+
+    function createFallingText() {
+      const text = document.createElement('span');
+      text.className = 'falling-text';
+      text.innerText = characters[Math.floor(Math.random() * characters.length)];
+      text.style.left = Math.random() * 100 + 'vw';
+
+      // ランダムな速度を設定
+      const speed = Math.random() * (maxSpeed - minSpeed) + minSpeed;
+      text.style.transition = `top ${speed}s linear`;
+
+      document.body.appendChild(text);
+
+      // 下まで落ちたら要素を削除
+      setTimeout(() => {
+        text.remove();
+      }, speed * 1000);
+    }
+
+    setInterval(createFallingText, 100);
+  </script>
+</body>
+</html>
