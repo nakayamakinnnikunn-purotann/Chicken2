@@ -1,50 +1,82 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>文字が落ちるエフェクト</title>
+  <title>単語が落ちるサイト</title>
   <style>
     body {
       margin: 0;
       overflow: hidden;
-      background-color: black;
     }
 
-    .falling-text {
-      position: absolute;
-      color: white;
-      font-size: 24px;
-      user-select: none;
+    #canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 </head>
 <body>
+  <div id="canvas"></div>
+
   <script>
     // 文字の配列
-    const characters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+    const words = ['Hello', 'World', 'OpenAI', 'Three.js', 'WebGL', 'ChatGPT'];
 
-    // 最小および最大の落下速度（ピクセル/秒）
-    const minSpeed = 50;
-    const maxSpeed = 200;
+    // 初期設定
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('canvas').appendChild(renderer.domElement);
 
-    function createFallingText() {
-      const text = document.createElement('span');
-      text.className = 'falling-text';
-      text.innerText = characters[Math.floor(Math.random() * characters.length)];
-      text.style.left = Math.random() * 100 + 'vw';
+    // 単語の作成
+    function createWord() {
+      const word = words[Math.floor(Math.random() * words.length)];
 
-      // ランダムな速度を設定
-      const speed = Math.random() * (maxSpeed - minSpeed) + minSpeed;
-      text.style.transition = `top ${speed}s linear`;
+      const geometry = new THREE.TextGeometry(word, {
+        font: new THREE.Font(),
+        size: 10,
+        height: 1,
+        curveSegments: 12,
+        bevelEnabled: false
+      });
 
-      document.body.appendChild(text);
+      const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.x = Math.random() * window.innerWidth - window.innerWidth / 2;
+      mesh.position.y = window.innerHeight / 2;
+      mesh.position.z = Math.random() * -500;
+      scene.add(mesh);
 
-      // 下まで落ちたら要素を削除
-      setTimeout(() => {
-        text.remove();
-      }, speed * 1000);
+      return mesh;
     }
 
-    setInterval(createFallingText, 100);
+    // レンダリングループ
+    function animate() {
+      requestAnimationFrame(animate);
+
+      scene.children.forEach(word => {
+        word.position.y -= Math.random() * 2 + 1;
+
+        if (word.position.y < -window.innerHeight / 2) {
+          word.position.y = window.innerHeight / 2;
+        }
+      });
+
+      renderer.render(scene, camera);
+    }
+
+    // カメラ設定
+    camera.position.z = 5;
+
+    // 単語を作成してアニメーションを開始
+    for (let i = 0; i < 100; i++) {
+      createWord();
+    }
+    animate();
   </script>
 </body>
 </html>
